@@ -1,0 +1,78 @@
+<!DOCTYPE html>   
+<html>   
+<head>  
+<meta name="viewport" content="width=device-width, initial-scale=1">  
+<title> Login Page </title>  
+<style>   
+Body {  
+  font-family: Calibri, Helvetica, sans-serif;  
+}  
+button {   
+       width: 100%;  
+        padding: 15px;   
+        margin: 10px 0px;   
+        border: none;   
+        cursor: pointer;   
+         }   
+ form {   
+        border: 3px solid #f1f1f1;   
+    }   
+ input[type=text], input[type=password] {   
+        width: 100%;   
+        margin: 8px 0;  
+        padding: 12px 20px;   
+        display: inline-block;   
+        border: 2px solid green;   
+        box-sizing: border-box;   
+    }  
+ button:hover {   
+        opacity: 0.7;   
+    }   
+  .cancelbtn {   
+        width: auto;   
+        padding: 10px 18px;  
+        margin: 10px 5px;  
+    }   
+        
+     
+ .container {   
+        padding: 25px;   
+    }   
+</style>
+    <script>
+        function submitData() {
+            // alert("The form was submitted");
+            console.log("sent");
+            var xhr = new XMLHttpRequest();
+            var url = "http://localhost:8000/user/login";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var json = JSON.parse(xhr.responseText);
+                    // alert(JSON.stringify(json))
+                    // alert(json["access_token"])
+                    localStorage.setItem("jwt",json["access_token"])
+                    alert(localStorage.getItem("jwt"))
+                }
+            };
+
+            var data = JSON.stringify({"email": document.login_form.username.value, "password": document.login_form.password.value});
+            xhr.send(data);
+
+        }
+    </script>
+</head>    
+<body>    
+    <center> <h1> Login Form </h1> </center>   
+    <form name="login_form" onsubmit="submitData()">
+        <div class="container">   
+            <label>Username : </label>   
+            <input type="text" placeholder="Enter Username" name="username" value="hey@mail.com" required>
+            <label>Password : </label>   
+            <input type="password" placeholder="Enter Password" name="password" value="hello" required>
+            <button type="submit">Login</button>   
+        </div>   
+    </form>     
+</body>     
+</html>  

@@ -1,0 +1,25 @@
+1. cała obsługa zookepera jest w klasie ZooKeeperNodeMonitor
+2. ponieważ obserwujemy 3 serwery, puszczamy 3 node monitory z róznymi adresami
+3. konstruktor nodemonitora dostaje adres serwera i ścieżkę noda do obserowania, czyli /z
+4. w klasie zaimplementowane jest 2 klasy obserwatorów:
+   -pierwsza to NodeWatcher, implementująca interfejs watcher i ma metodę process i w niej jak dostanie informację
+    o utworzeniu i usunięciu węzła to uruchamia i gasi aplikację, na koniec wywołuje zookepere exists, żeby zarejestrować
+    się na następne zdarzenie, może powinno być w finally, bo jak wyjątek to może przestać odbierać wiadomości
+   -drugi watcher, to ChildrenWatcher, który w process wywołuje parseChildren(), a ta metoda iteruje po drzewie dzieci
+    danej ścieżki i dla każdego elementu wywołuje rekurencyjnie getchildren() ciągle z tym samym obiektem childrenWatcher,
+    czyli jeśli coś się zmieni w monitorowanych dzieciach to ten watcher dostanie informację, childrenWatcher chodząc
+    rekurencyjnie po dzieciach wstawia ścieżki dzieci do zbioru, ten zbiór utrzymuje aktualną informację o dzieciach /z
+5. całość się uruchamia przez metodę connect, która łączy się z zookeperem i wstępnie tworzy obiekt NodeWatcher i przekazuje
+   go do metody exist, czyli będzie obserwował węzeł i wywołuje parseChildren, żeby dostać aktualną informację o zbiorach
+   dzieci i obserwować zmiany w dzieciach ChildrenWatcherem
+6. strategia jeden watcher do wszystkich dzieci
+7. gui w swingu, JTreeApp i tam godną uwagi klasą jest klasa wewnętrzna TreePanel, która implementuje interfejs ServerObserver,
+   który służy do spinania części zookeperowej i gui
+8. w ServerObserver jest jedna metoda onDataChanged, która ma nazwę serwera, z którym się łączymy, zbiór wszystkich węzłów i liczbę węzłów
+9. obiekt serverObserver jest w zookepernodemonitor i jeśli jest !=null to NodeWatcher wywołuje jego metodę onDataChanged i to jest robione
+   w NodeWatcher i ChildrenWatcher i w metodzie connect() po połączeniu, czyli w momencie kiedy coś się zmieni w obserwowanym
+   świecie serwerów to JTreePanel dostanie powiadomienie i od nowa utworzy zbuduje drzewo
+10. TreePanel ma mapę adres serwera w listę węzłów, druga mapa odwzorowuje nazwę serwera w liczbę dzieci
+11. wszystko jest spinane w klasie Main, wpierw budowana i startowana jest aplikacja, a wcześniej uruchamiany jest wątek, który
+    po 500ms wywoła funkcję, która tworzy NodeMonitory, ustawia JTreePanel jako obserwer, woła connect i wchodzi w nieskończenie
+    długiego sleepa

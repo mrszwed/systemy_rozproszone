@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+
+    function getCountries(){
+      var kraj = document.getElementById('kraj');
+      fetch("http://localhost:8000/countries")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+        for (c in data["countries"]){
+             console.log(c);
+             var item = document.createElement('option');
+             item.text = data["countries"][c];
+             item.value = data["countries"][c];
+             kraj.add(item);
+          }
+      });
+
+    }
+
+    function getWeatherFeatures(){
+      var feature = document.getElementById('feature');
+      fetch("http://localhost:8000/weather_features")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+        for (z in data){
+             console.log(z);
+             var item = document.createElement('option');
+             item.text = data[z];
+             item.value = z;
+             feature.add(item);
+          }
+      });
+
+    }
+
+    function myFunction() {
+
+
+      getCountries();
+      getWeatherFeatures();
+
+
+
+    }
+</script>
+</head>
+<body onload="myFunction()">
+
+<h2>Formularz</h2>
+
+<form id="form" action="http://localhost:8000/unprotected/dane" method="get" enctype="application/x-www-form-urlencoded">
+
+  <label for="kraj">Kraj:</label>
+  <select id="kraj" name="kraj"></select>
+  <br>
+  <label for="dni">Liczba dni:</label>
+  <select id="dni" name="dni">
+    <option value="30">30</option>
+    <option value="20">20</option>
+    <option value="15">15</option>
+    <option value="10">10</option>
+  </select>
+
+  <br>
+
+   <label for="feature">Cecha pogody:</label>
+  <select id="feature" name="feature"></select>
+
+  <br>
+
+  <input type="submit" value="Submit">
+
+</form>
+
+<div>
+
+
+
+</div>
+
+</body>
+</html>
